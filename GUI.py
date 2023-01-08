@@ -46,7 +46,7 @@ class GUI:
                     self.canvas.create_text(620, 40 * (14 - passenger.floor) + 20, text=str(len(floor.passengers)), anchor="w")
                     # self.building.check_elevators_for_sending_to_floor_and_send(passenger.floor)
         self.building.update()
-        root.after(100, self.update)
+        root.after(400, self.update)
 root = tk.Tk()
 gui = GUI(root)
 root.mainloop()
