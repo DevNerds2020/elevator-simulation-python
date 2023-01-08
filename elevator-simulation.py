@@ -20,7 +20,8 @@ class Elevator:
         self.capacity = 10
         self.speed = 1
         self.status = "idle"
-        
+        self.should_move = False
+        self.target_flores = []
 
     def __str__(self):
         return "Elevator " + str(self.id) + " is on floor " + str(self.floor) + " and has " + str(len(self.passengers)) + " passengers."
@@ -28,7 +29,26 @@ class Elevator:
     def move(self):
         if self.status == "moving":
             self.floor += self.direction * self.speed
-            if self.floor == 0:
+            # print("self.floor = " + str(self.floor))
+            # print("self.target_flores[0] = " + str(self.target_flores[0]))
+            if self.floor == self.target_flores[0]:
+                self.target_flores.pop(0)
+                if len(self.target_flores) == 0:
+                    self.direction = 0
+                    self.status = "idle"
+                    self.should_move = False
+                else:
+                    if self.floor < self.target_flores[0]:
+                        self.direction = 1
+                        self.status = "moving"
+                    elif self.floor > self.target_flores[0]:
+                        self.direction = -1
+                        self.status = "moving"
+                    else:
+                        self.direction = 0
+                        self.status = "idle"
+                        self.should_move = False
+            elif self.floor == 0:
                 self.direction = 0
                 self.status = "idle"
             elif self.floor == 14:
@@ -36,8 +56,8 @@ class Elevator:
                 self.status = "idle"
 
     def move_to_floor(self, floor):
-        print("self.floor = " + str(self.floor))
-        print("moving to floor " + str(floor))
+        # print("self.floor = " + str(self.floor))
+        # print("moving to floor " + str(floor))
         if self.floor < floor:
             self.direction = 1
             self.status = "moving"
@@ -47,6 +67,7 @@ class Elevator:
         else :
             self.direction = 0
             self.status = "idle"
+            self.should_move = False
         
     def add_passenger(self, passenger):
         if len(self.passengers) < self.capacity:
@@ -130,7 +151,7 @@ class Building:
         if passenger.elevator != None:
             passenger.elevator.add_passenger(passenger)
             passenger.status = "in elevator"
-            print(passenger, "create successfully!")
+            print(passenger, "create successfully! ********in if")
         else:
             passenger.status = "waiting"
             passenger.direction = passenger.get_direction()
@@ -139,53 +160,48 @@ class Building:
     def remove_passenger(self, passenger):
         self.passengers.remove(passenger)
         self.floors[passenger.floor].passengers.remove(passenger)
-    
-    def check_elevators_for_sending_to_floor_and_send(self, floor):
-        #if we have a stopped elevator in the building, we send it to the floor
-        #else, we send the closest elevator to the floor
-        for elevator in self.elevators:
-            if elevator.status == "idle":
-                elevator.move_to_floor(floor)
-                return
-            else:
-                #our algorithm is to send the closest elevator to the floor
-                pass
-                return
-        
-    
     def update(self):
+        # print('update')
         for elevator in self.elevators:
-            elevator.move()
-            for passenger in elevator.passengers:
-                if passenger.destination == elevator.floor:
-                    elevator.remove_passenger(passenger)
-                    self.remove_passenger(passenger)
+            # print(elevator.floor, elevator.status, elevator.direction, elevator.should_move, elevator.target_flores)
+            if elevator.should_move and elevator.status == "moving" and len(elevator.target_flores) > 0:
+                elevator.move()
+                for passenger in elevator.passengers:
+                    if passenger.destination == elevator.floor:
+                        elevator.remove_passenger(passenger)
+                        self.remove_passenger(passenger)
         for floor in self.floors:
             for passenger in floor.passengers:
+                # print(floor.id, passenger.status)
                 if passenger.status == "waiting":
                     passenger.direction = passenger.get_direction()
-                    for elevator in floor.elevators:
-                        if elevator.status == "idle" and passenger.direction == "up":
-                            elevator.direction = 1
+                    # print(passenger.direction)
+                    for elevator in self.elevators:
+                        # print(elevator.status, passenger.direction)
+                        if elevator.status == "idle":
+                            #move elevator to the floor
+                            if elevator.floor < floor.id:
+                                elevator.direction = 1
+                            elif elevator.floor > floor.id:
+                                elevator.direction = -1
+                            else:
+                                elevator.add_passenger(passenger)
+                                self.remove_passenger(passenger)
+                                elevator.status = "moving"
+                                elevator.should_move = True
+                                if passenger.destination > passenger.floor:
+                                    elevator.direction = 1
+                                elif passenger.destination < passenger.floor:
+                                    elevator.direction = -1
+                                else:
+                                    elevator.direction = 0
+                                    elevator.remove_passenger(passenger)
+                                    self.add_passenger(passenger)
+                                return
+                            elevator.should_move = True
+                            elevator.target_flores.append(floor.id)
                             elevator.status = "moving"
-                            elevator.add_passenger(passenger)
-                            floor.passengers.remove(passenger)
-                            break
-                        elif elevator.status == "idle" and passenger.direction == "down":
-                            elevator.direction = -1
-                            elevator.status = "moving"
-                            elevator.add_passenger(passenger)
-                            floor.passengers.remove(passenger)
-                            break
-                        elif elevator.status == "moving" and passenger.direction == "up" and elevator.direction == 1:
-                            elevator.add_passenger(passenger)
-                            floor.passengers.remove(passenger)
-                            break
-                        elif elevator.status == "moving" and passenger.direction == "down" and elevator.direction == -1:
-                            elevator.add_passenger(passenger)
-                            floor.passengers.remove(passenger)
-                            break
-
+                            return
 #gui class has a building, a canvas, and a list of buttons
 #the building is a building object
 #the canvas is a tkinter canvas
@@ -206,7 +222,7 @@ class GUI:
         self.update()
 
     def update(self):
-        self.building.update()
+        # self.building.elevators[0].move_to_floor(13)
         self.canvas.delete("all")
         for i in range(15):
             self.canvas.create_line(0, 40 * i, 600, 40 * i, fill="black")
