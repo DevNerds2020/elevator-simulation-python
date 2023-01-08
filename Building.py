@@ -1,12 +1,13 @@
 from Floor import Floor
 from Elevator import Elevator
 from Passenger import Passenger
-
-# in building class, we have a list of floors, a list of elevators, and a list of passengers
-# the list of floors is a list of floor objects
-# the list of elevators is a list of elevator objects
-# the list of passengers is a list of passenger objects
-# we have 15 floors, 3 elevators, and 0 passengers
+"""
+in building class, we have a list of floors, a list of elevators, and a list of passengers
+the list of floors is a list of floor objects
+the list of elevators is a list of elevator objects
+the list of passengers is a list of passenger objects
+we have 15 floors, 3 elevators, and 0 passengers
+"""
 class Building:
     def __init__(self):
         self.floors = []
@@ -45,9 +46,8 @@ class Building:
         self.passengers.remove(passenger)
         self.floors[passenger.floor].passengers.remove(passenger)
     def update(self):
-        # print('update')
+        # print(self.elevators[0].status, self.elevators[1].status, self.elevators[2].status)
         for elevator in self.elevators:
-            # print(elevator.floor, elevator.status, elevator.direction, elevator.should_move, elevator.target_flores)
             if elevator.should_move and elevator.status == "moving" and len(elevator.target_flores) > 0:
                 elevator.move()
                 for passenger in elevator.passengers:
@@ -66,12 +66,18 @@ class Building:
                             #move elevator to the floor
                             if elevator.floor < floor.id:
                                 elevator.direction = 1
+                                elevator.should_move = True
+                                elevator.target_flores.append(floor.id)
+                                elevator.status = "moving"
                             elif elevator.floor > floor.id:
                                 elevator.direction = -1
+                                elevator.should_move = True
+                                elevator.target_flores.append(floor.id)
+                                elevator.status = "moving"
                             else:
                                 elevator.add_passenger(passenger)
-                                self.remove_passenger(passenger)
                                 elevator.status = "moving"
+                                elevator.target_flores.append(passenger.destination)
                                 elevator.should_move = True
                                 if passenger.destination > passenger.floor:
                                     elevator.direction = 1
@@ -79,10 +85,8 @@ class Building:
                                     elevator.direction = -1
                                 else:
                                     elevator.direction = 0
-                                    elevator.remove_passenger(passenger)
-                                    self.add_passenger(passenger)
+                                    elevator.status = "idle"
+                                    elevator.should_move = False
                                 return
-                            elevator.should_move = True
-                            elevator.target_flores.append(floor.id)
-                            elevator.status = "moving"
+
                             return

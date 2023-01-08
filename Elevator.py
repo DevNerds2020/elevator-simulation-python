@@ -33,6 +33,7 @@ class Elevator:
                     self.direction = 0
                     self.status = "idle"
                     self.should_move = False
+                    print("elevator reached destination")
                 else:
                     if self.floor < self.target_flores[0]:
                         self.direction = 1
@@ -51,19 +52,7 @@ class Elevator:
                 self.direction = 0
                 self.status = "idle"
 
-    def move_to_floor(self, floor):
-        # print("self.floor = " + str(self.floor))
-        # print("moving to floor " + str(floor))
-        if self.floor < floor:
-            self.direction = 1
-            self.status = "moving"
-        elif self.floor > floor:
-            self.direction = -1
-            self.status = "moving"
-        else :
-            self.direction = 0
-            self.status = "idle"
-            self.should_move = False
+
         
     def add_passenger(self, passenger):
         if len(self.passengers) < self.capacity:
