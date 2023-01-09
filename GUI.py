@@ -15,7 +15,7 @@ the list of buttons is a list of tkinter buttons
 class GUI:
     def __init__(self, root):
         self.building = Building()
-        self.canvas = tk.Canvas(root, width=800, height=600, bg="white")
+        self.canvas = tk.Canvas(root, width=1000, height=600, bg="white")
         self.canvas.pack()
         self.buttons = []
         for i in range(15):
@@ -45,11 +45,15 @@ class GUI:
                     #put a text in the rectangle that shows the number of passengers waiting
                     self.canvas.create_text(620, 40 * (14 - passenger.floor) + 20, text=str(len(floor.passengers)), anchor="w")
                     # self.building.check_elevators_for_sending_to_floor_and_send(passenger.floor)
-                # elif(passenger.status == "arrived"):
-                #     #beside of the red rectangle, put a green rectangle
-                #     self.canvas.create_rectangle(640, 40 * (14 - passenger.floor) + 10, 680, 40 * (14 - passenger.floor) + 30, fill="green")
-                #     #put a text in the rectangle that shows the number of passengers arrived
-                #     self.canvas.create_text(660, 40 * (14 - passenger.floor) + 20, text=str(len(floor.passengers)), anchor="w")
+                elif(passenger.status == "arrived"):
+                    #beside of the red rectangle, put a green rectangle
+                    self.canvas.create_rectangle(640, 40 * (14 - passenger.floor) + 10, 680, 40 * (14 - passenger.floor) + 30, fill="green")
+                    #put a text in the rectangle that shows the number of passengers arrived
+                    self.canvas.create_text(660, 40 * (14 - passenger.floor) + 20, text=str(len(floor.passengers)), anchor="w")
+        for message in self.building.messages:
+            messageIndex = self.building.messages.index(message) + 1
+            #put the messages in the right up side of canvas
+            self.canvas.create_text(600, 20*messageIndex, text=message, anchor="w")
         self.building.update()
         root.after(400, self.update)
 root = tk.Tk()

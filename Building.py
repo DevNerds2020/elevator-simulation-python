@@ -13,6 +13,7 @@ class Building:
         self.floors = []
         self.elevators = []
         self.passengers = []
+        self.messages = []
         for i in range(15):
             self.floors.append(Floor(i))
         for i in range(3):
@@ -41,15 +42,10 @@ class Building:
     def add_passenger(self, passenger):
         self.passengers.append(passenger)
         passenger.elevator = self.choose_elevator_for_passenger(passenger)
-        if passenger.elevator != None:
-            passenger.elevator.add_passenger(passenger)
-            passenger.status = "in elevator"
-            print(passenger, "create successfully! ********in if")
-        else:
-            passenger.status = "waiting"
-            passenger.direction = passenger.get_direction()
+        passenger.status = "waiting"
+        passenger.direction = passenger.get_direction()
         self.floors[passenger.floor].passengers.append(passenger)
-        print(passenger, "create successfully!")
+        self.messages.append("Passenger " + str(passenger.id) + " is waiting on floor " + str(passenger.floor) + " to go to floor " + str(passenger.destination) + ".")
 
     def remove_passenger(self, passenger):
         self.passengers.remove(passenger)
@@ -59,11 +55,13 @@ class Building:
         # print(self.elevators[0].status, self.elevators[1].status, self.elevators[2].status)
         for elevator in self.elevators:
             if elevator.should_move and elevator.status == "moving" and len(elevator.target_flores) > 0:
-                print("elevator should move")
+                # print("elevator should move")
                 elevator.move()
                 for passenger in elevator.passengers:
                     if passenger.destination == elevator.floor:
                         elevator.remove_passenger(passenger)
+                        self.messages.append("Passenger " + str(passenger.id) + " arrived at floor " + str(passenger.destination) + ". with elevator " + str(elevator.id) + ".")
+
                         
     
     def move_idle_elevator(self, elevator, floor, passenger):

@@ -33,7 +33,6 @@ class Elevator:
                     self.direction = 0
                     self.status = "idle"
                     self.should_move = False
-                    print("elevator reached destination")
                 else:
                     if self.floor < self.target_flores[0]:
                         self.direction = 1
