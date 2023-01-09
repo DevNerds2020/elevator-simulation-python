@@ -45,6 +45,11 @@ class GUI:
                     #put a text in the rectangle that shows the number of passengers waiting
                     self.canvas.create_text(620, 40 * (14 - passenger.floor) + 20, text=str(len(floor.passengers)), anchor="w")
                     # self.building.check_elevators_for_sending_to_floor_and_send(passenger.floor)
+                # elif(passenger.status == "arrived"):
+                #     #beside of the red rectangle, put a green rectangle
+                #     self.canvas.create_rectangle(640, 40 * (14 - passenger.floor) + 10, 680, 40 * (14 - passenger.floor) + 30, fill="green")
+                #     #put a text in the rectangle that shows the number of passengers arrived
+                #     self.canvas.create_text(660, 40 * (14 - passenger.floor) + 20, text=str(len(floor.passengers)), anchor="w")
         self.building.update()
         root.after(400, self.update)
 root = tk.Tk()

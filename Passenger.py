@@ -14,6 +14,8 @@ class Passenger:
         self.id = id
         self.floor = floor
         self.destination = random.randint(0, 14)
+        while self.destination == self.floor:
+            self.destination = random.randint(0, 14)
         self.elevator = None
         self.status = "waiting"
 

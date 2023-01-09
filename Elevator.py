@@ -13,7 +13,7 @@ class Elevator:
         self.floor = 0
         self.direction = 0
         self.passengers = []
-        self.capacity = 10
+        self.capacity = 3
         self.speed = 1
         self.status = "idle"
         self.should_move = False

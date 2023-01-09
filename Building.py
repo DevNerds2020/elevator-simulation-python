@@ -31,6 +31,13 @@ class Building:
                 return elevator
         return None
 
+    def add_passenger_to_elevator(self, elevator, passenger):
+        elevator.add_passenger(passenger)
+        passenger.status = "in elevator"
+        passenger.elevator = elevator
+        elevator.target_flores.append(passenger.destination)
+        self.remove_passenger(passenger)
+
     def add_passenger(self, passenger):
         self.passengers.append(passenger)
         passenger.elevator = self.choose_elevator_for_passenger(passenger)
@@ -52,11 +59,12 @@ class Building:
         # print(self.elevators[0].status, self.elevators[1].status, self.elevators[2].status)
         for elevator in self.elevators:
             if elevator.should_move and elevator.status == "moving" and len(elevator.target_flores) > 0:
+                print("elevator should move")
                 elevator.move()
                 for passenger in elevator.passengers:
                     if passenger.destination == elevator.floor:
                         elevator.remove_passenger(passenger)
-                        self.remove_passenger(passenger)
+                        
     
     def move_idle_elevator(self, elevator, floor, passenger):
         #move elevator to the floor
@@ -71,10 +79,10 @@ class Building:
             elevator.target_flores.append(floor.id)
             elevator.status = "moving"
         else:
-            elevator.add_passenger(passenger)
             elevator.status = "moving"
-            elevator.target_flores.append(passenger.destination)
             elevator.should_move = True
+            while len(elevator.passengers) < 3 and len(floor.passengers) > 0:
+                self.add_passenger_to_elevator(elevator, floor.passengers[0])
             if passenger.destination > passenger.floor:
                 elevator.direction = 1
             elif passenger.destination < passenger.floor:
