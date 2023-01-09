@@ -28,7 +28,7 @@ class Elevator:
             # print("self.floor = " + str(self.floor))
             # print("self.target_flores[0] = " + str(self.target_flores[0]))
             if self.floor == self.target_flores[0]:
-                self.target_flores.pop(0)
+                # self.target_flores.pop(0)
                 if len(self.target_flores) == 0:
                     self.direction = 0
                     self.status = "idle"
