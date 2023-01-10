@@ -62,8 +62,8 @@ class Building:
                     if passenger.destination == elevator.floor:
                         elevator.remove_passenger(passenger)
                         self.messages.append("Passenger " + str(passenger.id) + " arrived at floor " + str(passenger.destination) + ". with elevator " + str(elevator.id) + ".")
-                        #notice => origin place was in elevator class
-                        elevator.target_flores.remove(passenger.destination)
+                        # #notice => origin place was in elevator class
+                        # elevator.target_flores.remove(passenger.destination)
                 for passenger in self.floors[elevator.floor].passengers:
                     if elevator.direction == -1 and passenger.status == "waiting" and elevator.capacity > len(elevator.passengers) and passenger.direction == "down":
                         self.add_passenger_to_elevator(elevator, passenger)
@@ -74,19 +74,15 @@ class Building:
     
     def move_idle_elevator(self, elevator, floor, passenger):
         #move elevator to the floor
+        elevator.should_move = True
+        elevator.status = "moving"
         if elevator.floor < floor.id:
+            elevator.target_flores.append(floor.id)
             elevator.direction = 1
-            elevator.should_move = True
-            elevator.target_flores.append(floor.id)
-            elevator.status = "moving"
         elif elevator.floor > floor.id:
-            elevator.direction = -1
-            elevator.should_move = True
             elevator.target_flores.append(floor.id)
-            elevator.status = "moving"
+            elevator.direction = -1
         else:
-            elevator.status = "moving"
-            elevator.should_move = True
             while len(elevator.passengers) < 3 and len(floor.passengers) > 0:
                 self.add_passenger_to_elevator(elevator, floor.passengers[0])
             if passenger.destination > passenger.floor:

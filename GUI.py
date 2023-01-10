@@ -51,13 +51,13 @@ class GUI:
                     #put a text in the rectangle that shows the number of passengers arrived
                     self.canvas.create_text(660, 40 * (14 - passenger.floor) + 20, text=str(len(floor.passengers)), anchor="w")
 
-        lastMessages = self.building.messages[-10:]
+        lastMessages = self.building.messages[-30:]
         for message in lastMessages:
             messageIndex = lastMessages.index(message) + 1
             #put the messages in the right up side of canvas
             self.canvas.create_text(650, 20*messageIndex, text=message, anchor="w")
         self.building.update()
-        root.after(1000, self.update)
+        root.after(500, self.update)
 root = tk.Tk()
 gui = GUI(root)
 root.mainloop()
