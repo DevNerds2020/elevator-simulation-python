@@ -11,14 +11,15 @@ the status is either waiting, in elevator, or arrived
 
 class Passenger:
     def __init__(self, id, floor):
-        self.id = id
+        self.id = id + 1
         self.floor = floor
         self.destination = random.randint(0, 14)
         while self.destination == self.floor:
             self.destination = random.randint(0, 14)
         self.elevator = None
         self.status = "waiting"
-
+        self.direction = self.get_direction()
+        
     def __str__(self):
         return "Passenger " + str(self.id) + " is on floor " + str(self.floor) + " and wants to go to floor " + str(self.destination) + "."
 

@@ -9,7 +9,7 @@ the capacity is an integer between 1 and 10
 """
 class Elevator:
     def __init__(self, id):
-        self.id = id
+        self.id = id + 1
         self.floor = 0
         self.direction = 0
         self.passengers = []

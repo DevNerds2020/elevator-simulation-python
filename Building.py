@@ -52,30 +52,21 @@ class Building:
         self.passengers.remove(passenger)
         self.floors[passenger.floor].passengers.remove(passenger)
 
-    def elevators_moving_update(self):
-        # print(self.elevators[0].status, self.elevators[1].status, self.elevators[2].status)
+    def update_moving_elevators(self):
         for elevator in self.elevators:
             if elevator.should_move and elevator.status == "moving" and len(elevator.target_flores) > 0:
-                # print("elevator should move")
                 elevator.move()
                 for passenger in elevator.passengers:
                     if passenger.destination == elevator.floor:
                         elevator.remove_passenger(passenger)
                         self.messages.append("Passenger " + str(passenger.id) + " arrived at floor " + str(passenger.destination) + ". with elevator " + str(elevator.id) + ".")
-                        # #notice => origin place was in elevator class
-                        # elevator.target_flores.remove(passenger.destination)
                 for passenger in self.floors[elevator.floor].passengers:
-                    if elevator.direction == -1 and passenger.status == "waiting" and elevator.capacity > len(elevator.passengers) and passenger.direction == "down":
-                        self.add_passenger_to_elevator(elevator, passenger)
-                    
-                    elif elevator.direction == 1 and passenger.status == "waiting" and elevator.capacity > len(elevator.passengers) and passenger.direction == "up":
-                        self.add_passenger_to_elevator(elevator, passenger)
+                    if passenger.status == "waiting" and elevator.capacity > len(elevator.passengers):
+                        if ( elevator.direction == -1 and passenger.direction == "down" ) or ( elevator.direction == 1 and passenger.direction == "up" ):
+                            self.add_passenger_to_elevator(elevator, passenger)
+                        
 
-    
-    def move_idle_elevator(self, elevator, floor, passenger):
-        #move elevator to the floor
-        elevator.should_move = True
-        elevator.status = "moving"
+    def choose_elevator_direction(self, elevator, floor, passenger):
         if elevator.floor < floor.id:
             elevator.target_flores.append(floor.id)
             elevator.direction = 1
@@ -95,12 +86,17 @@ class Building:
                 elevator.should_move = False
             return
 
+    #move elevator to the floor
+    def move_idle_elevator(self, elevator, floor, passenger):
+        elevator.should_move = True
+        elevator.status = "moving"
+        self.choose_elevator_direction(elevator, floor, passenger)
         return
     
-    def floors_update(self):
+    # floor update is looking for waiting passengers and is finding idle elevators to send them to the passengers
+    def update_idle_elevators(self):
         for floor in self.floors:
             for passenger in floor.passengers:
-                # print(floor.id, passenger.status)
                 if passenger.status == "waiting":
                     passenger.direction = passenger.get_direction()
                     # print(passenger.direction)
@@ -108,8 +104,9 @@ class Building:
                         # print(elevator.status, passenger.direction)
                         if elevator.status == "idle":
                             self.move_idle_elevator(elevator, floor, passenger)
-                            break
-                            
+                            break 
+
+    # our main loop is always running and checking the moving and waiting elevators                        
     def update(self):
-        self.elevators_moving_update()
-        self.floors_update()
+        self.update_moving_elevators()
+        self.update_idle_elevators()
